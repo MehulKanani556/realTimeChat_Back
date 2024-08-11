@@ -4,6 +4,8 @@ const ioHandler = (req, res) => {
   if (!res.socket.server.io) {
     console.log("*First use, starting socket.io");
     const io = new Server(res.socket.server, {
+      path: "/api/socketio",
+      addTrailingSlash: false,
       cors: {
         origin: "http://localhost:3000",
         methods: ["GET", "POST"],
@@ -22,8 +24,6 @@ const ioHandler = (req, res) => {
     });
 
     res.socket.server.io = io;
-  } else {
-    console.log("socket.io already running");
   }
   res.end();
 };
