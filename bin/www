@@ -14,7 +14,7 @@ const mongoose = require('mongoose');
 mongoose.connect('mongodb+srv://mehul:mehul123@cluster0.vhughsu.mongodb.net/realTimeChat')
   .then(() => console.log('Database Connected!'));
 
-var port = normalizePort(process.env.PORT || '5000');
+var port = normalizePort(process.env.PORT || 'https://real-time-chat-back.vercel.app/');
 app.set('port', port);
 
 /**
