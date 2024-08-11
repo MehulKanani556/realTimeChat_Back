@@ -64,7 +64,7 @@ io.on('connection', (socket) => {
   });
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = "https://real-time-chat-back.vercel.app/";
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 module.exports = app;
