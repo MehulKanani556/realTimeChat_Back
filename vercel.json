@@ -4,30 +4,16 @@
     {
       "src": "app.js",
       "use": "@vercel/node"
-    },
-    {
-      "src": "api/socket.js",
-      "use": "@vercel/node"
     }
   ],
- "routes": [
-  {
-    "src": "/socket.io/(.*)",
-    "dest": "/api/socket.js",
-    "headers": {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,OPTIONS",
-      "Access-Control-Allow-Headers": "X-Requested-With,Content-Type,Accept"
+  "routes": [
+    {
+      "src": "/socket.io/(.*)",
+      "dest": "app.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "app.js"
     }
-  },
-  {
-    "src": "/(.*)",
-    "dest": "app.js",
-    "headers": {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-      "Access-Control-Allow-Headers": "X-Requested-With, Content-Type, Accept"
-    }
-  }
-]
+  ]
 }
