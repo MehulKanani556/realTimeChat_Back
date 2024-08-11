@@ -1,19 +1,25 @@
 {
-    "version": 2,
-    "builds": [
-      {
-        "src": "app.js",
-        "use": "@vercel/node"
+  "version": 2,
+  "builds": [
+    {
+      "src": "app.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/socketio/(.*)",
+      "dest": "/api/socket.js",
+      "headers": {
+        "Access-Control-Allow-Origin": "http://localhost:3000",
+        "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
+        "Access-Control-Allow-Headers": "X-Requested-With,Content-Type,Accept",
+        "Access-Control-Allow-Credentials": "true"
       }
-    ],
-    "routes": [
-      {
-        "src": "/api/socketio",
-        "dest": "/api/socketio.js"
-      },
-      {
-        "src": "/(.*)",
-        "dest": "app.js"
-      }
-    ]
-  }
+    },
+    {
+      "src": "/(.*)",
+      "dest": "app.js"
+    }
+  ]
+}

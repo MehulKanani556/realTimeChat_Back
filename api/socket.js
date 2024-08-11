@@ -3,7 +3,13 @@ const { Server } = require("socket.io");
 const ioHandler = (req, res) => {
   if (!res.socket.server.io) {
     console.log("*First use, starting socket.io");
-    const io = new Server(res.socket.server);
+    const io = new Server(res.socket.server, {
+      cors: {
+        origin: "http://localhost:3000",
+        methods: ["GET", "POST"],
+        credentials: true
+      }
+    });
 
     io.on("connection", (socket) => {
       console.log("User connected", socket.id);
