@@ -41,6 +41,7 @@ app.use(function(err, req, res, next) {
 
 const connectDB = require('./db');
 connectDB();
+const { Server } = require('socket.io');
 
 const socketIoHandler = require('./socketIoHandler');
 app.use('/api/socketio', socketIoHandler);
@@ -55,7 +56,7 @@ const io = require('socket.io')(server, {
 });
 
 io.on('connection', (socket) => {
-  console.log('New client connected');
+  console.log('New client connected', socket.id);
   socket.emit('test', 'Good Morning ...');
 
   socket.on('message', (data) => {
