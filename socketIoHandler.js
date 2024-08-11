@@ -7,8 +7,9 @@ const socketIoHandler = (req, res) => {
       path: '/api/socketio',
       addTrailingSlash: false,
       cors: {
-        origin: '*',
-        methods: ['GET', 'POST']
+        origin: ["http://localhost:3000", "https://your-frontend-domain.com"],
+        methods: ["GET", "POST"],
+        credentials: true
       }
     });
 
