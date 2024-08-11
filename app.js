@@ -6,7 +6,7 @@ var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-const connectChat = require('./socketIo');
+// const connectChat = require('./socketIo');
 
 var app = express();
 // connectChat();
