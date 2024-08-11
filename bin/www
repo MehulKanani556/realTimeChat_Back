@@ -7,12 +7,20 @@
 var app = require('../app');
 var debug = require('debug')('backend:server');
 var http = require('http');
+require('dotenv').config();
 const mongoose = require('mongoose');
+
+console.log('Attempting to connect to MongoDB...');
+
+mongoose.connect('mongodb+srv://mehul:mehul123@cluster0.vhughsu.mongodb.net/realTimeChat')
+.then(() => console.log('Database Connected!'))
+.catch((err) => console.error('Database connection error:', err));
+
 /**
  * Get port from environment and store in Express.
  */
-mongoose.connect('mongodb+srv://mehul:mehul123@cluster0.vhughsu.mongodb.net/realTimeChat')
-  .then(() => console.log('Database Connected!'));
+
+
 
 var port = normalizePort(process.env.PORT || '5000');
 app.set('port', port);
