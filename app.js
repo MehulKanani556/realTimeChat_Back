@@ -9,7 +9,7 @@ var usersRouter = require('./routes/users');
 const connectChat = require('./socketIo');
 
 var app = express();
-connectChat();
+// connectChat();
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -38,5 +38,8 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+const connectDB = require('./db');
+connectDB();
 
 module.exports = app;
