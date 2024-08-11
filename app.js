@@ -42,28 +42,8 @@ app.use(function(err, req, res, next) {
 const connectDB = require('./db');
 connectDB();
 
-const http = require('http');
-const { Server } = require("socket.io");
+const socketIoHandler = require('./socketIoHandler.js');
 
-const server = http.createServer(app);
-const io = new Server(server, {
-  cors: {
-    origin: "*",
-    methods: ["GET", "POST"]
-  }
-});
-
-io.on("connection", (socket) => {
-  console.log("User connected", socket.id);
-
-  socket.broadcast.emit("test", "Good Morning ...");
-
-  socket.on('message', (data) => {
-    io.to(data.id).emit('msg', data);
-  });
-});
-
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.use('/api/socketio', socketIoHandler);
 
 module.exports = app;
