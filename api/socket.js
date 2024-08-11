@@ -4,7 +4,7 @@ const ioHandler = (req, res) => {
   if (!res.socket.server.io) {
     const io = new Server(res.socket.server, {
       cors: {
-        origin: "*",
+        origin: "http://localhost:3000/",
         methods: ["GET", "POST"]
       }
     });
