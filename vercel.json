@@ -9,9 +9,9 @@
   "routes": [
     {
       "src": "/api/socketio/(.*)",
-      "dest": "/api/socket.js",
+      "dest": "/api/socketio.js",
       "headers": {
-        "Access-Control-Allow-Origin": "http://localhost:3000",
+        "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
         "Access-Control-Allow-Headers": "X-Requested-With,Content-Type,Accept",
         "Access-Control-Allow-Credentials": "true"
