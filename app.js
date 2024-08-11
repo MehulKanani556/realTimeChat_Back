@@ -6,10 +6,10 @@ var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-// const connectChat = require('./socketIo');
+const connectChat = require('./socketIo');
 
 var app = express();
-// connectChat();
+connectChat();
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -38,33 +38,5 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
-
-const connectDB = require('./db');
-connectDB();
-const { Server } = require('socket.io');
-
-const socketIoHandler = require('./socketIoHandler');
-app.use('/api/socketio', socketIoHandler);
-
-const server = require('http').createServer(app);
-const io = require('socket.io')(server, {
-  path: '/api/socketio',
-  cors: {
-    origin: '*',
-    methods: ['GET', 'POST']
-  }
-});
-
-io.on('connection', (socket) => {
-  console.log('New client connected', socket.id);
-  socket.emit('test', 'Good Morning ...');
-
-  socket.on('message', (data) => {
-    io.emit('msg', data);
-  });
-});
-
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 module.exports = app;
