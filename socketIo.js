@@ -1,5 +1,6 @@
 const { Server } = require("socket.io");
 const User = require("./model/usermodel");
+const Message = require("./model/messageModel");
 
 const connectChat = () => {
     const io = new Server({
@@ -52,14 +53,27 @@ const connectChat = () => {
                 return socket.emit('messageSent', { success: false, error: 'Recipient not connected' });
             }
         
-            io.to(recipientSocketId).emit('msg', {
+            // Save message to the database
+            const message = new Message({
                 from: socket.mobileNumber,
-                to: data.to, // Add the recipient's mobile number
+                to: data.to,
                 msg: data.msg
             });
-        
-            console.log('Message sent to recipient:', data.to, 'with socket ID:', recipientSocketId);
-            socket.emit('messageSent', { data:data });
+
+            await message.save()
+                .then(() => {
+                    console.log('Message saved to database:', message);
+                    io.to(recipientSocketId).emit('msg', {
+                        from: socket.mobileNumber,
+                        to: data.to,
+                        msg: data.msg
+                    });
+                    socket.emit('messageSent', { data: data });
+                })
+                .catch(err => {
+                    console.error('Error saving message:', err);
+                    socket.emit('messageSent', { success: false, error: 'Error saving message' });
+                });
         });
         
         
