@@ -13,35 +13,63 @@ const connectChat = () => {
     io.on("connection", (socket) => {
         console.log("User connected", socket.id);
 
-        socket.on('register', async (mobileNumber) => {
-            const user = await User.findOne({ mobileNumber });
-            if (user) {
-                socket.mobileNumber = mobileNumber;
-                connectedUsers.set(mobileNumber, socket.id);
-                console.log("User registered with mobile number:", mobileNumber);
-            } else {
-                console.log("User not found in database:", mobileNumber);
+        socket.on('authenticate', async (userData) => {
+            console.log('Authenticating user with mobile:', userData.mobileNumber);
+            try {
+                const user = await User.findOne({ mobileNumber: userData.mobileNumber });
+                if (user) {
+                    socket.mobileNumber = userData.mobileNumber;
+                    connectedUsers.set(userData.mobileNumber, socket.id);
+                    console.log("User authenticated:", userData.mobileNumber);
+                    console.log("Connected users map:", Array.from(connectedUsers.entries()));
+                    socket.emit('authenticated', { success: true });
+                } else {
+                    console.log("User not found in database:", userData.mobileNumber);
+                    socket.emit('authenticated', { success: false, error: 'User not found' });
+                }
+                
+            } catch (error) {
+                console.error("Authentication error:", error);
+                socket.emit('authenticated', { success: false, error: 'Authentication failed' });
             }
         });
 
-        socket.on('message', async (data) => {
+        socket.on('sendMessage', async (data) => {
+            console.log('Attempting to send message:', data);
+            
+            if (!data.to || !data.msg) {
+                console.log('Invalid message data');
+                return socket.emit('messageSent', { success: false, error: 'Invalid message data' });
+            }
+        
+            console.log("Current connected users:", Array.from(connectedUsers.entries())); // Log all connected users
+
             const recipientSocketId = connectedUsers.get(data.to);
-            console.log("object",data)
-            if (recipientSocketId) {
-                io.to(recipientSocketId).emit('msg', {
-                    id: socket.mobileNumber,
-                    msg: data.msg
-                });
-            } else {
+            console.log('Recipient socket ID:', recipientSocketId); // Check if this is undefined
+        
+            if (!recipientSocketId) {
                 console.log("Recipient not connected:", data.to);
+                return socket.emit('messageSent', { success: false, error: 'Recipient not connected' });
             }
+        
+            io.to(recipientSocketId).emit('msg', {
+                from: socket.mobileNumber,
+                to: data.to, // Add the recipient's mobile number
+                msg: data.msg
+            });
+        
+            console.log('Message sent to recipient:', data.to, 'with socket ID:', recipientSocketId);
+            socket.emit('messageSent', { data:data });
         });
+        
+        
 
-        socket.on('disconnect', () => {
-            if (socket.mobileNumber) {
-                connectedUsers.delete(socket.mobileNumber);
-            }
-        });
+        // socket.on('disconnect', () => {
+        //     if (socket.mobileNumber) {
+        //         connectedUsers.delete(socket.mobileNumber);
+        //         console.log("User disconnected:", socket.mobileNumber);
+        //     }
+        // });
     });
 
     io.listen(4000);
