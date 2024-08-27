@@ -53,27 +53,36 @@ const connectChat = () => {
                 return socket.emit('messageSent', { success: false, error: 'Recipient not connected' });
             }
         
-            // Save message to the database
-            const message = new Message({
-                from: socket.mobileNumber,
-                to: data.to,
-                msg: data.msg
-            });
+            // Rate limiting
+            const now = Date.now();
+            if (!socket.lastMessageTime || now - socket.lastMessageTime > 1000) { // 1 second limit
+                socket.lastMessageTime = now;
 
-            await message.save()
-                .then(() => {
-                    console.log('Message saved to database:', message);
-                    io.to(recipientSocketId).emit('msg', {
-                        from: socket.mobileNumber,
-                        to: data.to,
-                        msg: data.msg
-                    });
-                    socket.emit('messageSent', { data: data });
-                })
-                .catch(err => {
-                    console.error('Error saving message:', err);
-                    socket.emit('messageSent', { success: false, error: 'Error saving message' });
+                // Save message to the database
+                const message = new Message({
+                    from: socket.mobileNumber,
+                    to: data.to,
+                    msg: data.msg
                 });
+
+                await message.save()
+                    .then(() => {
+                        console.log('Message saved to database:', message);
+                        io.to(recipientSocketId).emit('msg', {
+                            from: socket.mobileNumber,
+                            to: data.to,
+                            msg: data.msg
+                        });
+                        socket.emit('messageSent', { data: data });
+                    })
+                    .catch(err => {
+                        console.error('Error saving message:', err);
+                        socket.emit('messageSent', { success: false, error: 'Error saving message' });
+                    });
+            } else {
+                console.log('Message sent too quickly, rate limit exceeded');
+                socket.emit('messageSent', { success: false, error: 'Rate limit exceeded' });
+            }
         });
         
         
